@@ -1,0 +1,4 @@
+*.ipynb
+wandb
+outputs
+models
