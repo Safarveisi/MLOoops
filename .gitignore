@@ -1,4 +1,4 @@
 *.ipynb
 wandb
 outputs
-models
+models/best-checkpoint.ckpt

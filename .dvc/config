@@ -1,0 +1,8 @@
+[core]
+    remote = ci_s3
+['remote "ci_s3"']
+    url = s3://customerintelligence/advanced-analytics/ssafarveisi/mlops
+    endpointurl = http://s3-de-central.profitbricks.com
+    region = eu-central-1 
+    credentialpath = /home/ssafarveisi/.aws/config
+    profile = default
