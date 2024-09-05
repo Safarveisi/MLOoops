@@ -57,7 +57,8 @@ class SamplesVisualisationLogger(pl.Callback):
         )
         wrong_df.to_csv(csv_path, index=False)
         trainer.logger.experiment.log_artifact(trainer.logger.run_id, csv_path)
-
+        # Remove the CSV file after it has been logged
+        os.remove(csv_path)
 
 @hydra.main(config_path="./configs", config_name="config", version_base="1.3")
 def main(cfg):
