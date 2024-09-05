@@ -28,18 +28,18 @@ def convert_model(cfg):
     }
     logger.info(f"Converting the model into ONNX format")
     torch.onnx.export(
-        cola_model,  # model being run
+        cola_model,
         (
             input_sample["input_ids"].to("cuda:0"),
             input_sample["attention_mask"].to("cuda:0"),
-        ),  # model input (or a tuple for multiple inputs)
-        f"{root_dir}/models/model.onnx",  # where to save the model (can be a file or file-like object)
+        ), 
+        f"{root_dir}/models/model.onnx",
         export_params=True,
         opset_version=14,
-        input_names=["input_ids", "attention_mask"],  # the model's input names
-        output_names=["output"],  # the model's output names
+        input_names=["input_ids", "attention_mask"],
+        output_names=["output"],
         dynamic_axes={
-            "input_ids": {0: "batch_size"},  # variable length axes
+            "input_ids": {0: "batch_size"},
             "attention_mask": {0: "batch_size"},
             "output": {0: "batch_size"},
         },
