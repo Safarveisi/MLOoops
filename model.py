@@ -107,12 +107,13 @@ class ColaModel(pl.LightningModule):
         labels = torch.cat([x["labels"] for x in self.val_output_list])
         logits = torch.cat([x["logits"] for x in self.val_output_list])
         preds = torch.argmax(logits, 1)
-        self.logger.experiment.log(
-            {
-                "conf": wandb.plot.confusion_matrix(
-                    probs=logits.cpu().numpy(), y_true=labels.cpu().numpy()
-                )
-            }
+        self.logger.experiment.log_metric(
+            run_id=self.logger.run_id,
+            key="accuracy",
+            value=accuracy_score(
+                y_true=labels.cpu().numpy(),
+                y_pred=preds.cpu().numpy(),
+            ),
         )
 
     def configure_optimizers(self):
