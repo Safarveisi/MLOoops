@@ -43,7 +43,7 @@ class ColaModel(pl.LightningModule):
             labels=batch["label"].to("cuda:0"),
         )
         preds = torch.argmax(outputs.logits, 1)
-        train_acc = self.train_accuracy_metric(preds, batch["label"].to("cuda:0"))
+        train_acc = self.train_accuracy_metric(preds, batch["label"])
         self.log(
             "train/loss", outputs.loss, prog_bar=True, on_epoch=True, batch_size=64
         )
@@ -63,12 +63,12 @@ class ColaModel(pl.LightningModule):
         )
         preds = torch.argmax(outputs.logits, 1)
 
-        valid_acc = self.val_accuracy_metric(preds, labels.to("cuda:0"))
-        precision_macro = self.precision_macro_metric(preds, labels.to("cuda:0"))
-        recall_macro = self.recall_macro_metric(preds, labels.to("cuda:0"))
-        precision_micro = self.precision_micro_metric(preds, labels.to("cuda:0"))
-        recall_micro = self.recall_micro_metric(preds, labels.to("cuda:0"))
-        f1 = self.f1_metric(preds, labels.to("cuda:0"))
+        valid_acc = self.val_accuracy_metric(preds, labels)
+        precision_macro = self.precision_macro_metric(preds, labels)
+        recall_macro = self.recall_macro_metric(preds, labels)
+        precision_micro = self.precision_micro_metric(preds, labels)
+        recall_micro = self.recall_micro_metric(preds, labels)
+        f1 = self.f1_metric(preds, labels)
 
         self.log("valid/loss", outputs.loss, prog_bar=True, on_step=True, batch_size=64)
         self.log("valid/acc", valid_acc, prog_bar=True, on_epoch=True, batch_size=64)
