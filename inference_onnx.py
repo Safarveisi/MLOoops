@@ -1,9 +1,9 @@
+from typing import List
 import numpy as np
 import onnxruntime as ort
 from scipy.special import softmax
 
 from data import DataModule
-from utils import timing
 from onnxruntime import SessionOptions
 
 
@@ -16,8 +16,7 @@ class ColaONNXPredictor:
         self.processor = DataModule()
         self.lables = ["unacceptable", "acceptable"]
 
-    @timing
-    def predict(self, text):
+    def predict(self, text) -> List[dict]:
         inference_sample = {"sentence": text}
         processed = self.processor.tokenize_data(inference_sample)
 
@@ -29,7 +28,7 @@ class ColaONNXPredictor:
         scores = softmax(ort_outs[0])[0]
         predictions = []
         for score, label in zip(scores, self.lables):
-            predictions.append({"label": label, "score": score})
+            predictions.append({"label": label, "score": float(score)})
         return predictions
 
 
@@ -37,6 +36,3 @@ if __name__ == "__main__":
     sentence = "The boy is sitting on a bench"
     predictor = ColaONNXPredictor("./models/model.onnx")
     print(predictor.predict(sentence))
-    sentences = ["The boy is sitting on a bench"] * 10
-    for sentence in sentences:
-        predictor.predict(sentence)
