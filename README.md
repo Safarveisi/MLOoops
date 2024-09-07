@@ -20,29 +20,37 @@ This table provides an overview of the purpose and responsibilities of each Pyth
 
 ## Continuous Integration and Deployment
 
-This repository uses GitHub Actions for continuous integration and deployment, specifically building and publishing a Docker image to Docker Hub. The automated workflow is defined in the `.github/workflows` directory.
+This repository leverages GitHub Actions for automating the process of building and deploying Docker images to Docker Hub, followed by deploying the application to a Kubernetes cluster. The GitHub Actions workflow is defined within the `.github/workflows` directory.
 
-### How to Trigger the GitHub Action
+### Workflow Trigger
 
-The GitHub Actions workflow is configured to trigger manually via the GitHub interface:
+- **Workflow Dispatch**: This workflow can be manually triggered via the GitHub UI, offering control over when the CI/CD process runs.
 
-- **Workflow Dispatch**: The workflow named **"Build and publish image to docker hub"** can be manually triggered by selecting **"Actions"** in the GitHub repository, choosing the desired workflow, and clicking on **"Run workflow"**. 
+### Workflow Description
 
-### Overview of the Workflow
+The workflow contains two jobs executed in sequential order:
 
-Upon triggering, the workflow performs the following steps:
+#### publish_image
+1. **Checkout Code**: The latest code is retrieved from the repository.
+2. **Set up QEMU**: Prepares QEMU to emulate different architectures, enhancing compatibility.
+3. **Set up Docker Buildx**: Configures Docker Buildx for more advanced build capabilities.
+4. **Login to Docker Hub**: Authenticates to Docker Hub using credentials stored as GitHub secrets (`DOCKER_HUB_USERNAME`, `DOCKER_HUB_TOKEN`).
+5. **Build and Push**: Builds the Docker image from the codebase and pushes it to Docker Hub. It utilizes AWS credentials (also stored as secrets) for actions requiring AWS resources.
 
-1. **Checkout Code**: Retrieves the latest code from the repository to ensure the Docker image is built from the most current state.
-   
-2. **Set Up QEMU**: Prepares QEMU for multi-platform builds, enabling cross-platform compatibility for the Docker image.
+#### deploy_to_k8s
+1. **Dependency**: This job runs only after the successful completion of the `publish_image` job.
+2. **Checkout Code**: Pulls the latest changes from the repository.
+3. **Set up kubectl**: Prepares `kubectl` for interacting with Kubernetes, configured with credentials provided via GitHub secrets.
+4. **Deploy**: Executes a deployment to Kubernetes using specified manifests. It accurately updates or modifies the Kubernetes configuration as defined.
 
-3. **Set Up Docker Buildx**: Configures Docker Buildx to support advanced Docker build features, allowing efficient and multi-platform builds.
+### Usage
 
-4. **Login to Docker Hub**: Authenticates using Docker Hub credentials stored in repository secrets (`DOCKER_HUB_USERNAME` and `DOCKER_HUB_TOKEN`).
+To trigger this workflow:
+1. Navigate to the **Actions** tab in the GitHub repository.
+2. Select the workflow you wish to run.
+3. Click on **Run workflow** dropdown button and confirm your input to initiate the process manually.
 
-5. **Build and Push Image**: Builds the Docker image from the repository, tagging it as `ciaa/mlops:latest`, and pushes it to Docker Hub. The action securely accesses AWS credentials stored in GitHub secrets (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`) during the build process.
-
-This setup ensures a streamlined and secure process for maintaining and updating the Docker image as part of the DevOps pipeline.
+The process ensures that the Docker images are built with the most recent changes and correctly deployed in a secure and consistent manner, maintaining the integrity of the production environment.
 
 ## Acknowledgments
 
