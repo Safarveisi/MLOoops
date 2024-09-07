@@ -29,7 +29,7 @@ jobs:
                 secrets: |
                   aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  
+
     deploy_to_k8s:
       runs-on: ubuntu-latest
       steps:
@@ -44,7 +44,7 @@ jobs:
           - name: Deploy
             uses: Azure/k8s-deploy@v5
             with:
+              action: deploy
               namespace: 'default'
               manifests: |
                   k8s/deploy_app.yaml
-              images: ciaa/mlops:latest
