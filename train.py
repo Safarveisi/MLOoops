@@ -26,11 +26,13 @@ logger = logging.getLogger(__name__)
 
 
 class SamplesVisualisationLogger(pl.Callback):
-    def __init__(self, datamodule):
+    def __init__(self, datamodule, log_dir="./mlflow_logs"):
         super().__init__()
 
         self.datamodule = datamodule
-
+        self.log_dir = log_dir
+        os.makedirs(self.log_dir, exist_ok=True)
+        
     def on_validation_end(self, trainer, pl_module):
         val_batch = next(iter(self.datamodule.val_dataloader()))
         sentences = val_batch["sentence"]
