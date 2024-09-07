@@ -2,3 +2,4 @@
 wandb
 outputs
 models/best-checkpoint.ckpt
+secrets

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cola-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cola-app
+  template:
+    metadata:
+      labels:
+        app: cola-app
+    spec:
+      containers:
+        - name: cola-app
+          image: docker.io/ciaa/mlops:latest
+          resources:
+            limits:
+              memory: "2000Mi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cola-service
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: cola-app
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
