@@ -52,6 +52,64 @@ To trigger this workflow:
 
 The process ensures that the Docker images are built with the most recent changes and correctly deployed in a secure and consistent manner, maintaining the integrity of the production environment.
 
+
+## Monitoring
+To monitor the app deployed on Kubernetes, I use Filebeat, Elasticsearch, and Kibana. Filebeat helps track the logs in each app container, forwarding them to Elasticsearch. Kibana then connects to Elasticsearch to search and visualize these logs. To deploy these components on Kubernetes, I followed the steps outlined below:
+* Create a directory for each component/service in `monitoring/`.
+* Run the following command (assuming you have Helm installed) to add a new chart repository called `elastic`. A chart repository is a collection of Helm charts (packages of pre-configured Kubernetes resources):
+
+```bash
+helm repo add elastic https://helm.elastic.co
+```
+* Run the following commands to retrieve the default configuration values for each application from the Elastic Helm repository and save them to a file named `values.yml`:
+
+```bash
+helm show values elastic/logstash > monitoring/logstash/values.yml
+helm show values elastic/elasticsearch > monitoring/elasticsearch/values.yml
+helm show values elastic/filebeat > monitoring/filebeat/values.yml
+``` 
+Please note that I made some changes to the configurations in these `yml` files where necessary. You can use them as they are for your deployment. For example, in `monitoring/filebeat/values.yml`, I replaced `filebeatConfig` with the following:
+```yaml
+filebeatConfig:
+    filebeat.yml: |
+    filebeat.inputs:
+    - type: container
+        paths:
+        - /var/log/containers/*.log
+        processors:
+        - add_kubernetes_metadata:
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+    output.elasticsearch:
+        host: '${NODE_NAME}'
+        hosts: '["https://${ELASTICSEARCH_HOSTS:elasticsearch-master:9200}"]'
+        username: '${ELASTICSEARCH_USERNAME}'
+        password: '${ELASTICSEARCH_PASSWORD}'
+        protocol: https
+        ssl.certificate_authorities: ["/usr/share/filebeat/certs/ca.crt"]
+``` 
+* Install the applications on Kubernetes using the following commands:
+
+```bash
+helm install --kubeconfig /path/to/kubeconfig.yml elasticsearch elastic/elasticsearch -f monitoring/elasticsearch/values.yml
+helm install --kubeconfig /path/to/kubeconfig.yml filebeat elastic/filebeat -f monitoring/filebeat/values.yml
+helm install --kubeconfig /path/to/kubeconfig.yml kibana elastic/kibana -f monitoring/kibana/values.yml  
+```
+
+* To access the Kibana UI, use the following commands to acquire the username and password. Use `kubectl port-forward` first to make the UI reachable from your localhost.  
+
+```bash
+kubectl --kubeconfig /path/to/kubeconfig.yml port-forward svc/kibana-kibana 8090:5601
+```
+
+```bash
+kubectl --kubeconfig /path/to/kubeconfig.yml get secret elasticsearch-master-credentials -o jsonpath="{.data.username}" | base64 --decode
+kubectl --kubeconfig /path/to/kubeconfig.yml get secret elasticsearch-master-credentials -o jsonpath="{.data.password}" | base64 --decode
+```
+
 ## Acknowledgments
 
 This repository is based on the original work [MLOps-Basics](https://github.com/graviraja/MLOps-Basics) by graviraja. I extend my gratitude to the original author and contributors for their contributions to MLOps practices.
