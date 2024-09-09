@@ -1,6 +1,6 @@
 ## Overview
 
-This repository focuses on a machine learning pipeline that fine-tunes a BERT model, specifically google/bert_uncased_L-2_H-128_A-2 from Hugging Face, for a classification task. It supports the entire lifecycle of deploying the model as a web service using FastAPI. Additionally, the repository facilitates model optimization by converting models to the ONNX format for efficient inference and offers deployment procedures on Kubernetes with CI/CD integrated via GitHub Actions. The logging and monitoring system is implemented using Filebeat, Elasticsearch, and Kibana to ensure that the application maintains high availability and performance standards.
+This repository focuses on a machine learning pipeline that fine-tunes a BERT model, specifically `google/bert_uncased_L-2_H-128_A-2` from Hugging Face, for a classification task. It supports the entire lifecycle of deploying the model as a web service using FastAPI. Additionally, the repository facilitates model optimization by converting models to the ONNX format for efficient inference and offers deployment procedures on Kubernetes with CI/CD integrated via GitHub Actions. The logging and monitoring system is implemented using Filebeat, Elasticsearch, and Kibana to ensure that the application maintains high availability and performance standards.
 
 ## Module Overview
 
