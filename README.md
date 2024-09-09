@@ -18,6 +18,19 @@ This table provides an overview of the purpose and responsibilities of each Pyth
 |                         | provides text prediction, determining if the text is acceptable or unacceptable. |
 | `utils.py`               | Collection of helper functions (e.g., `get_dvc_file_from_s3` which is used to get the tracked ONNX-formatted model from the s3 storage). |
 
+## Directory Overview
+
+This table provides an overview of the purpose of some directories.
+
+| Module                   | Usage                                                                                         |
+|--------------------------|-----------------------------------------------------------------------------------------------|
+| `.dvc`               | Created once you run dvc init. It contains the remote storage configurations. |
+| `.github/workflows`  | Contains the GitHub workflows. |
+| `configs`                | Contains configurations for preprocessing, training, and the transformer model to be used. |
+| `k8s`                 |  Contains the manifest file for app deployment on Kubernetes, including endpoints for a home page and a prediction service that accepts text input to return prediction results. |
+| `models` | Contains model.onnx.dvc, which is versioned here. |
+| `monitoring`     | Refer to the `Monitoring` section below for details. |
+
 ## Continuous Integration and Deployment
 
 This repository leverages GitHub Actions for automating the process of building and deploying Docker images to Docker Hub, followed by deploying the application to a Kubernetes cluster. The GitHub Actions workflow is defined within the `.github/workflows` directory.
